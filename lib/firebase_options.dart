@@ -65,7 +65,8 @@ class DefaultFirebaseOptions {
     projectId: 'taxigo-c63b1',
     databaseURL: 'https://taxigo-c63b1-default-rtdb.firebaseio.com',
     storageBucket: 'taxigo-c63b1.appspot.com',
-    iosClientId: '258910643577-1nncph86g681kugeb5j4unch44d97bvj.apps.googleusercontent.com',
+    iosClientId:
+        '258910643577-1nncph86g681kugeb5j4unch44d97bvj.apps.googleusercontent.com',
     iosBundleId: 'com.gotaxi.taxigo.taxigo',
   );
 }

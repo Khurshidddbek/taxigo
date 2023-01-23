@@ -30,6 +30,13 @@
             {
               "client_id": "258910643577-jrglqt1dmmr2lq4t96mt047fcmnl61h9.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "258910643577-1nncph86g681kugeb5j4unch44d97bvj.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.gotaxi.taxigo.taxigo"
+              }
             }
           ]
         }
