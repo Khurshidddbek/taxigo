@@ -84,6 +84,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
           email: emailController.text, password: passwordController.text);
     } on FirebaseAuthException catch (e) {
       showSnackbar(e.message);
+      return;
     }
 
     // FirebaseDatabase
@@ -121,6 +122,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
   }
 
   // ===========================================================================
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
