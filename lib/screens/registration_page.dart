@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
 class RegistrationPage extends StatelessWidget {
+  static const String id = "registration";
+
   const RegistrationPage({super.key});
 
   @override
@@ -115,7 +117,9 @@ class RegistrationPage extends StatelessWidget {
 
                 // #button
                 TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
                   child: const Text(
                     "Already have a RIDER account? Login",
                     style: TextStyle(

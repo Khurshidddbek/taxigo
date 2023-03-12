@@ -3,8 +3,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:taxigo/screens/registration_page.dart';
 
 class LoginPage extends StatelessWidget {
+  static const String id = "login";
+
   const LoginPage({super.key});
 
   @override
@@ -96,7 +99,9 @@ class LoginPage extends StatelessWidget {
 
                 // #button
                 TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.pushNamed(context, RegistrationPage.id);
+                  },
                   child: const Text(
                     "Don't have an account? Sign up here",
                     style: TextStyle(
