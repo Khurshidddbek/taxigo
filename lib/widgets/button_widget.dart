@@ -18,7 +18,7 @@ class TaxiButton extends StatelessWidget {
     return CupertinoButton(
       color: color,
       borderRadius: BorderRadius.circular(24),
-      onPressed: () => onPressed,
+      onPressed: () => onPressed(),
       child: SizedBox(
         height: 40,
         child: Center(
