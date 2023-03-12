@@ -1,9 +1,10 @@
 // Optimize this flutter UI code and get me only code
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:taxigo/brand_colors.dart';
 import 'package:taxigo/screens/registration_page.dart';
+import 'package:taxigo/widgets/button_widget.dart';
 
 class LoginPage extends StatelessWidget {
   static const String id = "login";
@@ -76,23 +77,10 @@ class LoginPage extends StatelessWidget {
                 const SizedBox(height: 50),
 
                 // #button
-                CupertinoButton(
-                  color: Colors.green,
-                  borderRadius: BorderRadius.circular(24),
+                TaxiButton(
+                  title: "LOGIN",
+                  color: BrandColors.green,
                   onPressed: () {},
-                  child: const SizedBox(
-                    height: 40,
-                    child: Center(
-                      child: Text(
-                        "LOGIN",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
                 ),
 
                 const SizedBox(height: 25),

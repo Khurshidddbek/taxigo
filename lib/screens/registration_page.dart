@@ -1,6 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:taxigo/brand_colors.dart';
+import 'package:taxigo/widgets/button_widget.dart';
 
 class RegistrationPage extends StatelessWidget {
   static const String id = "registration";
@@ -94,23 +95,10 @@ class RegistrationPage extends StatelessWidget {
                 const SizedBox(height: 50),
 
                 // #button
-                CupertinoButton(
-                  color: Colors.green,
-                  borderRadius: BorderRadius.circular(24),
+                TaxiButton(
+                  title: "REGISTER",
+                  color: BrandColors.accentPurple,
                   onPressed: () {},
-                  child: const SizedBox(
-                    height: 40,
-                    child: Center(
-                      child: Text(
-                        "REGISTER",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
                 ),
 
                 const SizedBox(height: 25),
@@ -121,9 +109,9 @@ class RegistrationPage extends StatelessWidget {
                     Navigator.pop(context);
                   },
                   child: const Text(
-                    "Already have a RIDER account? Login",
+                    "Already have a RIDER account? Log in",
                     style: TextStyle(
-                      fontSize: 18,
+                      fontSize: 17,
                       color: Colors.black,
                     ),
                   ),
