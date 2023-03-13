@@ -9,6 +9,7 @@ import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:taxigo/brand_colors.dart';
 import 'package:taxigo/screens/registration_page.dart';
 import 'package:taxigo/widgets/button_widget.dart';
+import 'package:taxigo/widgets/progress_dialog_widget.dart';
 
 import 'main_page.dart';
 
@@ -67,13 +68,27 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   // APIs ======================================================================
-  void apiLogin() async {
+  Future<void> apiLogin() async {
+    // show loading dialog
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (context) => const ProgressDialog(status: "Loggin you in"),
+    );
+
     // firebaseAuth
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: emailController.text, password: passwordController.text);
     } on FirebaseAuthException catch (e) {
       showSnackbar(e.message);
+
+      // close loading dialog
+      if (context.mounted) {
+        Navigator.pop(context);
+      }
+
+      return;
     }
 
     // check user info is available
@@ -82,9 +97,21 @@ class _LoginPageState extends State<LoginPage> {
         await apiGetUserInfo();
       } on PlatformException catch (e) {
         showSnackbar(e.message);
+
+        // close loading dialog
+        if (context.mounted) {
+          Navigator.pop(context);
+        }
+
         return;
       } catch (e) {
         showSnackbar(e.toString());
+
+        // close loading dialog
+        if (context.mounted) {
+          Navigator.pop(context);
+        }
+
         return;
       }
 

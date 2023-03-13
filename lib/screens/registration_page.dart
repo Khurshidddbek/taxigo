@@ -7,6 +7,8 @@ import 'package:taxigo/brand_colors.dart';
 import 'package:taxigo/screens/main_page.dart';
 import 'package:taxigo/widgets/button_widget.dart';
 
+import '../widgets/progress_dialog_widget.dart';
+
 class RegistrationPage extends StatefulWidget {
   static const String id = "registration";
 
@@ -78,12 +80,25 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
   // APIs ======================================================================
   void apiRegister() async {
+    // show loading dialog
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (context) => const ProgressDialog(status: "Registering you..."),
+    );
+
     // firebaseAuth
     try {
       await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: emailController.text, password: passwordController.text);
     } on FirebaseAuthException catch (e) {
       showSnackbar(e.message);
+
+      // close loading dialog
+      if (context.mounted) {
+        Navigator.pop(context);
+      }
+
       return;
     }
 
@@ -93,6 +108,12 @@ class _RegistrationPageState extends State<RegistrationPage> {
         await apiPutUserInfo();
       } catch (e) {
         showSnackbar(e.toString());
+
+        // close loading dialog
+        if (context.mounted) {
+          Navigator.pop(context);
+        }
+
         return;
       }
 
