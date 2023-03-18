@@ -1,12 +1,69 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:taxigo/brand_colors.dart';
+import 'package:taxigo/domains/app_lat_long.dart';
+import 'package:taxigo/domains/location_service.dart';
+import 'package:yandex_mapkit/yandex_mapkit.dart';
 
-class MainPage extends StatelessWidget {
+import '../brand_colors.dart';
+
+class MainPage extends StatefulWidget {
   static const String id = "main";
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  MainPage({super.key});
+  const MainPage({super.key});
+
+  @override
+  State<MainPage> createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final mapControllerCompleter = Completer<YandexMapController>();
+
+  @override
+  void initState() {
+    super.initState();
+    _initLocationPermission().ignore();
+  }
+
+  // Functions =================================================================
+
+  Future<void> _initLocationPermission() async {
+    if (!await LocationService().checkPermission()) {
+      await LocationService().requestPermission();
+    }
+
+    _fetchCurrentocation();
+  }
+
+  Future<void> _fetchCurrentocation() async {
+    AppLatLong currentLocation;
+    const defLocation = TashkentLocation();
+
+    try {
+      currentLocation = await LocationService().getCurrentLocation();
+    } catch (e) {
+      currentLocation = defLocation;
+    }
+
+    _moveToCurrentLocation(currentLocation);
+  }
+
+  Future<void> _moveToCurrentLocation(AppLatLong currentLocation) async {
+    (await mapControllerCompleter.future).moveCamera(
+      animation: const MapAnimation(type: MapAnimationType.smooth, duration: 1),
+      CameraUpdate.newCameraPosition(
+        CameraPosition(
+          target: Point(
+              latitude: currentLocation.lat, longitude: currentLocation.long),
+          zoom: 15,
+        ),
+      ),
+    );
+  }
+
+  // ===========================================================================
 
   @override
   Widget build(BuildContext context) {
@@ -98,8 +155,10 @@ class MainPage extends StatelessWidget {
       body: Stack(
         children: [
           // #map
-          Container(
-            color: Colors.blue[50],
+          YandexMap(
+            onMapCreated: (controller) {
+              mapControllerCompleter.complete(controller);
+            },
           ),
 
           // #drawer call button
