@@ -235,20 +235,33 @@ class _MainPageState extends State<MainPage> {
                   padding: const EdgeInsets.only(right: 20, bottom: 20),
                   child: GestureDetector(
                     onTap: () => _initLocationPermission(),
-                    child: CircleAvatar(
-                      backgroundColor: Colors.white,
-                      radius: 28,
-                      child: showLocationLoading
-                          ? const Padding(
-                              padding: EdgeInsets.all(16.0),
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
+                    child: DecoratedBox(
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black26,
+                            blurRadius: 5,
+                            spreadRadius: .5,
+                            offset: Offset(.7, .7),
+                          ),
+                        ],
+                      ),
+                      child: CircleAvatar(
+                        backgroundColor: Colors.white,
+                        radius: 28,
+                        child: showLocationLoading
+                            ? const Padding(
+                                padding: EdgeInsets.all(16.0),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Icon(
+                                Icons.gps_fixed_outlined,
+                                color: Colors.black87,
                               ),
-                            )
-                          : Icon(
-                              CupertinoIcons.location_solid,
-                              color: Colors.grey[850],
-                            ),
+                      ),
                     ),
                   ),
                 ),

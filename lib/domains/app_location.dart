@@ -1,9 +1,11 @@
 import 'package:taxigo/domains/app_lat_long.dart';
 
 abstract class AppLocation {
-  Future<AppLatLong> getCurrentLocation();
+  Future<bool> checkPermission();
 
   Future<bool> requestPermission();
 
-  Future<bool> checkPermission();
+  Future<AppLatLong> getCurrentLocation();
+
+  Future<String> getAddressByCordinates(AppLatLong location);
 }
