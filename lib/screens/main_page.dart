@@ -20,6 +20,7 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final mapControllerCompleter = Completer<YandexMapController>();
+  bool showLocationLoading = false;
 
   @override
   void initState() {
@@ -30,11 +31,19 @@ class _MainPageState extends State<MainPage> {
   // Functions =================================================================
 
   Future<void> _initLocationPermission() async {
+    setState(() {
+      showLocationLoading = true;
+    });
+
     if (!await LocationService().checkPermission()) {
       await LocationService().requestPermission();
     }
 
-    _fetchCurrentocation();
+    await _fetchCurrentocation();
+
+    setState(() {
+      showLocationLoading = false;
+    });
   }
 
   Future<void> _fetchCurrentocation() async {
@@ -189,140 +198,169 @@ class _MainPageState extends State<MainPage> {
             ),
           ),
 
-          // #bottomsheet
           Positioned(
             left: 0,
             right: 0,
             bottom: 0,
-            child: Container(
-              padding: const EdgeInsets.all(24),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(15),
-                  topRight: Radius.circular(15),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black26,
-                    blurRadius: 15,
-                    spreadRadius: .5,
-                    offset: Offset(.7, .7),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                // #gps button
+                Padding(
+                  padding: const EdgeInsets.only(right: 20, bottom: 20),
+                  child: GestureDetector(
+                    onTap: () => _initLocationPermission(),
+                    child: CircleAvatar(
+                      backgroundColor: Colors.white,
+                      radius: 28,
+                      child: showLocationLoading
+                          ? const Padding(
+                              padding: EdgeInsets.all(16.0),
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                              ),
+                            )
+                          : Icon(
+                              CupertinoIcons.location_solid,
+                              color: Colors.grey[850],
+                            ),
+                    ),
                   ),
-                ],
-              ),
-              child: SafeArea(
-                top: false,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      "Nice to see you!",
-                      style: TextStyle(fontSize: 12),
-                    ),
-                    const Text(
-                      "Where are you going?",
-                      style: TextStyle(fontFamily: "Brand-Bold", fontSize: 18),
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    // #search
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(4),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Colors.black12,
-                            blurRadius: 5,
-                            spreadRadius: .5,
-                            offset: Offset(.7, .7),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        children: const [
-                          Icon(
-                            CupertinoIcons.search,
-                            color: Colors.blueAccent,
-                          ),
-                          SizedBox(width: 10),
-                          Text("Search destination"),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    // #home
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.home_outlined,
-                          color: BrandColors.dimText,
-                        ),
-                        const SizedBox(width: 12),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
-                            Text(
-                              "Add Home",
-                              style: TextStyle(
-                                fontFamily: "Brand-Bold",
-                                color: BrandColors.textSemiLight,
-                              ),
-                            ),
-                            Text(
-                              "Your residential address",
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: BrandColors.dimText,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-
-                    const Divider(
-                      height: 40,
-                      color: BrandColors.dimText,
-                    ),
-
-                    // #work
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.work_outline,
-                          color: BrandColors.dimText,
-                        ),
-                        const SizedBox(width: 12),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
-                            Text(
-                              "Add Work",
-                              style: TextStyle(
-                                fontFamily: "Brand-Bold",
-                                color: BrandColors.textSemiLight,
-                              ),
-                            ),
-                            Text(
-                              "Your office address",
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: BrandColors.dimText,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
                 ),
-              ),
+
+                // #bottomsheet
+                Container(
+                  padding: const EdgeInsets.all(24),
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(15),
+                      topRight: Radius.circular(15),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 15,
+                        spreadRadius: .5,
+                        offset: Offset(.7, .7),
+                      ),
+                    ],
+                  ),
+                  child: SafeArea(
+                    top: false,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "Nice to see you!",
+                          style: TextStyle(fontSize: 12),
+                        ),
+                        const Text(
+                          "Where are you going?",
+                          style:
+                              TextStyle(fontFamily: "Brand-Bold", fontSize: 18),
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        // #search
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(4),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Colors.black12,
+                                blurRadius: 5,
+                                spreadRadius: .5,
+                                offset: Offset(.7, .7),
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            children: const [
+                              Icon(
+                                CupertinoIcons.search,
+                                color: Colors.blueAccent,
+                              ),
+                              SizedBox(width: 10),
+                              Text("Search destination"),
+                            ],
+                          ),
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        // #home
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.home_outlined,
+                              color: BrandColors.dimText,
+                            ),
+                            const SizedBox(width: 12),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: const [
+                                Text(
+                                  "Add Home",
+                                  style: TextStyle(
+                                    fontFamily: "Brand-Bold",
+                                    color: BrandColors.textSemiLight,
+                                  ),
+                                ),
+                                Text(
+                                  "Your residential address",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: BrandColors.dimText,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+
+                        const Divider(
+                          height: 40,
+                          color: BrandColors.dimText,
+                        ),
+
+                        // #work
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.work_outline,
+                              color: BrandColors.dimText,
+                            ),
+                            const SizedBox(width: 12),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: const [
+                                Text(
+                                  "Add Work",
+                                  style: TextStyle(
+                                    fontFamily: "Brand-Bold",
+                                    color: BrandColors.textSemiLight,
+                                  ),
+                                ),
+                                Text(
+                                  "Your office address",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: BrandColors.dimText,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
