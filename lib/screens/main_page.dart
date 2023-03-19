@@ -20,6 +20,7 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final mapControllerCompleter = Completer<YandexMapController>();
+  late final List<MapObject> mapObjects = [];
   bool showLocationLoading = false;
 
   @override
@@ -70,6 +71,29 @@ class _MainPageState extends State<MainPage> {
         ),
       ),
     );
+
+    _addCurrentLocationToMapObjects(currentLocation);
+  }
+
+  void _addCurrentLocationToMapObjects(AppLatLong currentLocation) {
+    setState(() {
+      mapObjects.add(
+        PlacemarkMapObject(
+          mapId: const MapObjectId('current_location'),
+          point: Point(
+            latitude: currentLocation.lat,
+            longitude: currentLocation.long,
+          ),
+          icon: PlacemarkIcon.single(
+            PlacemarkIconStyle(
+              scale: 2.5,
+              image:
+                  BitmapDescriptor.fromAssetImage('assets/images/pickicon.png'),
+            ),
+          ),
+        ),
+      );
+    });
   }
 
   // ===========================================================================
@@ -165,6 +189,7 @@ class _MainPageState extends State<MainPage> {
         children: [
           // #map
           YandexMap(
+            mapObjects: mapObjects,
             onMapCreated: (controller) {
               mapControllerCompleter.complete(controller);
             },
