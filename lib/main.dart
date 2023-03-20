@@ -6,6 +6,7 @@ import 'package:taxigo/firebase_options.dart';
 import 'package:taxigo/screens/login_page.dart';
 import 'package:taxigo/screens/main_page.dart';
 import 'package:taxigo/screens/registration_page.dart';
+import 'package:taxigo/screens/search_page.dart';
 
 void main() async {
   // Firebase init
@@ -34,6 +35,7 @@ class MyApp extends StatelessWidget {
           LoginPage.id: (context) => const LoginPage(),
           RegistrationPage.id: (context) => const RegistrationPage(),
           MainPage.id: (context) => const MainPage(),
+          SearchPage.id: (context) => const SearchPage(),
         },
       ),
     );

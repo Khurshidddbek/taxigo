@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:taxigo/datamodels/address.dart' as address;
 import 'package:taxigo/dataprovider/app_data.dart';
 import 'package:taxigo/domains/location_service.dart';
+import 'package:taxigo/screens/search_page.dart';
 import 'package:yandex_geocoder/yandex_geocoder.dart';
 import 'package:yandex_mapkit/yandex_mapkit.dart' as y_mapkit;
 
@@ -323,29 +324,34 @@ class _MainPageState extends State<MainPage> {
                         const SizedBox(height: 20),
 
                         // #search
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(4),
-                            boxShadow: const [
-                              BoxShadow(
-                                color: Colors.black12,
-                                blurRadius: 5,
-                                spreadRadius: .5,
-                                offset: Offset(.7, .7),
-                              ),
-                            ],
-                          ),
-                          child: Row(
-                            children: const [
-                              Icon(
-                                CupertinoIcons.search,
-                                color: Colors.blueAccent,
-                              ),
-                              SizedBox(width: 10),
-                              Text("Search destination"),
-                            ],
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(context, SearchPage.id);
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(4),
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Colors.black12,
+                                  blurRadius: 5,
+                                  spreadRadius: .5,
+                                  offset: Offset(.7, .7),
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              children: const [
+                                Icon(
+                                  CupertinoIcons.search,
+                                  color: Colors.blueAccent,
+                                ),
+                                SizedBox(width: 10),
+                                Text("Search destination"),
+                              ],
+                            ),
                           ),
                         ),
 
