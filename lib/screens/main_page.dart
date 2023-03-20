@@ -2,9 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:taxigo/domains/app_lat_long.dart';
+import 'package:provider/provider.dart';
+import 'package:taxigo/datamodels/address.dart' as address;
+import 'package:taxigo/dataprovider/app_data.dart';
 import 'package:taxigo/domains/location_service.dart';
-import 'package:yandex_mapkit/yandex_mapkit.dart';
+import 'package:yandex_geocoder/yandex_geocoder.dart';
+import 'package:yandex_mapkit/yandex_mapkit.dart' as y_mapkit;
 
 import '../brand_colors.dart';
 
@@ -19,8 +22,8 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final mapControllerCompleter = Completer<YandexMapController>();
-  late final List<MapObject> mapObjects = [];
+  final mapControllerCompleter = Completer<y_mapkit.YandexMapController>();
+  late final List<y_mapkit.MapObject> mapObjects = [];
   bool showLocationLoading = false;
 
   @override
@@ -48,8 +51,8 @@ class _MainPageState extends State<MainPage> {
   }
 
   Future<void> _fetchCurrentocation() async {
-    AppLatLong currentLocation;
-    const defLocation = TashkentLocation();
+    address.Address currentLocation;
+    final defLocation = address.TashkentLocation();
 
     try {
       currentLocation = await LocationService().getCurrentLocation();
@@ -57,16 +60,34 @@ class _MainPageState extends State<MainPage> {
       currentLocation = defLocation;
     }
 
-    _moveToCurrentLocation(currentLocation);
+    // #geocoding
+    GeocodeResponse? geocodeResponse =
+        await LocationService().getAddressByCordinates(currentLocation);
+    if (geocodeResponse != null) {
+      // #TODO: currentLocation.placeId = ...something
+      currentLocation.placeName = geocodeResponse.firstAddress?.formatted;
+      currentLocation.placeFormattedName =
+          geocodeResponse.firstFullAddress.formattedAddress;
+    }
+
+    if (context.mounted) {
+      Provider.of<AppData>(context, listen: false)
+          .updateCurrentLocation(currentLocation);
+
+      _moveToCurrentLocation(currentLocation);
+    }
   }
 
-  Future<void> _moveToCurrentLocation(AppLatLong currentLocation) async {
+  Future<void> _moveToCurrentLocation(address.Address currentLocation) async {
     (await mapControllerCompleter.future).moveCamera(
-      animation: const MapAnimation(type: MapAnimationType.smooth, duration: 1),
-      CameraUpdate.newCameraPosition(
-        CameraPosition(
-          target: Point(
-              latitude: currentLocation.lat, longitude: currentLocation.long),
+      animation: const y_mapkit.MapAnimation(
+          type: y_mapkit.MapAnimationType.smooth, duration: 1),
+      y_mapkit.CameraUpdate.newCameraPosition(
+        y_mapkit.CameraPosition(
+          target: y_mapkit.Point(
+            latitude: currentLocation.latitude,
+            longitude: currentLocation.longitude,
+          ),
           zoom: 15,
         ),
       ),
@@ -75,20 +96,20 @@ class _MainPageState extends State<MainPage> {
     _addCurrentLocationToMapObjects(currentLocation);
   }
 
-  void _addCurrentLocationToMapObjects(AppLatLong currentLocation) {
+  void _addCurrentLocationToMapObjects(address.Address currentLocation) {
     setState(() {
       mapObjects.add(
-        PlacemarkMapObject(
-          mapId: const MapObjectId('current_location'),
-          point: Point(
-            latitude: currentLocation.lat,
-            longitude: currentLocation.long,
+        y_mapkit.PlacemarkMapObject(
+          mapId: const y_mapkit.MapObjectId('current_location'),
+          point: y_mapkit.Point(
+            latitude: currentLocation.latitude,
+            longitude: currentLocation.longitude,
           ),
-          icon: PlacemarkIcon.single(
-            PlacemarkIconStyle(
+          icon: y_mapkit.PlacemarkIcon.single(
+            y_mapkit.PlacemarkIconStyle(
               scale: 2.5,
-              image:
-                  BitmapDescriptor.fromAssetImage('assets/images/pickicon.png'),
+              image: y_mapkit.BitmapDescriptor.fromAssetImage(
+                  'assets/images/pickicon.png'),
             ),
           ),
         ),
@@ -188,7 +209,7 @@ class _MainPageState extends State<MainPage> {
       body: Stack(
         children: [
           // #map
-          YandexMap(
+          y_mapkit.YandexMap(
             mapObjects: mapObjects,
             onMapCreated: (controller) {
               mapControllerCompleter.complete(controller);

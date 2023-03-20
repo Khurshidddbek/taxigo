@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:taxigo/domains/app_lat_long.dart';
+import 'package:taxigo/datamodels/address.dart' as address;
 import 'package:taxigo/domains/app_location.dart';
 import 'package:yandex_geocoder/yandex_geocoder.dart';
 
 class LocationService implements AppLocation {
-  final defLocation = const TashkentLocation();
+  final defLocation = address.TashkentLocation();
   final YandexGeocoder geocoder =
       YandexGeocoder(apiKey: "4f514936-fdfb-45af-8450-126838bdc0c9");
 
@@ -22,12 +22,13 @@ class LocationService implements AppLocation {
   }
 
   @override
-  Future<AppLatLong> getCurrentLocation() async {
+  Future<address.Address> getCurrentLocation() async {
     return Geolocator.getCurrentPosition().then((value) {
-      return AppLatLong(lat: value.latitude, long: value.longitude);
+      return address.Address(
+          latitude: value.latitude, longitude: value.longitude);
     }).catchError((e) {
       debugPrint("LocationService.getCurrentLocation() Error: $e");
-      return const TashkentLocation();
+      return address.TashkentLocation();
     });
   }
 
@@ -44,17 +45,21 @@ class LocationService implements AppLocation {
   }
 
   @override
-  Future<String> getAddressByCordinates(AppLatLong location) async {
+  Future<GeocodeResponse?> getAddressByCordinates(
+      address.Address location) async {
     try {
       final GeocodeResponse geocodeFromPoint =
           await geocoder.getGeocode(GeocodeRequest(
-        geocode: PointGeocode(latitude: location.lat, longitude: location.long),
+        geocode: PointGeocode(
+          latitude: location.latitude,
+          longitude: location.longitude,
+        ),
         lang: Lang.enEn,
       ));
-      return geocodeFromPoint.firstFullAddress.formattedAddress ?? "";
+      return geocodeFromPoint;
     } catch (e) {
       debugPrint("LocationService.getAddressByCordinates() Error: $e");
-      return "";
+      return null;
     }
   }
 }

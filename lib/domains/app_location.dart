@@ -1,11 +1,12 @@
-import 'package:taxigo/domains/app_lat_long.dart';
+import 'package:taxigo/datamodels/address.dart' as address;
+import 'package:yandex_geocoder/yandex_geocoder.dart';
 
 abstract class AppLocation {
   Future<bool> checkPermission();
 
   Future<bool> requestPermission();
 
-  Future<AppLatLong> getCurrentLocation();
+  Future<address.Address> getCurrentLocation();
 
-  Future<String> getAddressByCordinates(AppLatLong location);
+  Future<GeocodeResponse?> getAddressByCordinates(address.Address location);
 }
