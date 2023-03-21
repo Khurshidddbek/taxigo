@@ -2,6 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:taxigo/brand_colors.dart';
 import 'package:taxigo/dataprovider/app_data.dart';
+import 'package:taxigo/networkservice/http_requests.dart';
+import 'package:taxigo/networkservice/parser.dart';
+import 'package:taxigo/networkservice/query_parameters.dart';
+
+import '../datamodels/searched_address.dart';
+import '../networkservice/apis.dart';
 
 class SearchPage extends StatefulWidget {
   static const String id = "search_page";
@@ -14,14 +20,34 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   var pickupController = TextEditingController();
   var destinationController = TextEditingController();
+  List<SearchedAddress> searchedAddresses = [];
+
+  void searchPlaceByText(String text) async {
+    if (text.length < 3) return;
+
+    String? responeData = await HttpRequests.get(
+      Apis.searchPlaceByText,
+      QueryParameters.searchPlaceByText(
+        text: text,
+        searchArea: Provider.of<AppData>(context, listen: false).searchArea,
+      ),
+    );
+
+    setState(() {
+      searchedAddresses = Parser.searchPlaceByText(responeData ?? "");
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     // #set current location
-    pickupController.text =
-        Provider.of<AppData>(context).currentLocation?.placeName ?? "";
+    pickupController.text = Provider.of<AppData>(context, listen: true)
+            .currentLocation
+            ?.placeName ??
+        "";
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text(
           "Set Destination",
@@ -103,6 +129,7 @@ class _SearchPageState extends State<SearchPage> {
                         child: TextField(
                           controller: destinationController,
                           autofocus: true,
+                          onChanged: (value) => searchPlaceByText(value),
                           decoration: const InputDecoration(
                             hintText: "Where to?",
                             border: OutlineInputBorder(
@@ -122,9 +149,59 @@ class _SearchPageState extends State<SearchPage> {
               ),
             ),
 
+            const SizedBox(height: 10),
+
             // #search results
+            Expanded(
+              child: ListView.separated(
+                itemCount: searchedAddresses.length,
+                itemBuilder: (context, index) =>
+                    SearchedItem(searchedAddress: searchedAddresses[index]),
+                separatorBuilder: (context, index) => const Divider(),
+              ),
+            ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class SearchedItem extends StatelessWidget {
+  final SearchedAddress searchedAddress;
+  const SearchedItem({
+    required this.searchedAddress,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      child: Row(
+        children: [
+          const Icon(
+            Icons.location_on_outlined,
+            color: BrandColors.dimText,
+          ),
+
+          const SizedBox(width: 10),
+
+          // #searched address info
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(searchedAddress.name),
+                const SizedBox(height: 5),
+                Text(
+                  searchedAddress.address,
+                  style: const TextStyle(color: BrandColors.dimText),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

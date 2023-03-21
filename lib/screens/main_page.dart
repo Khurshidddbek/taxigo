@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:taxigo/datamodels/address.dart' as address;
+import 'package:taxigo/datamodels/search_area.dart' as search_area;
 import 'package:taxigo/dataprovider/app_data.dart';
 import 'package:taxigo/domains/location_service.dart';
 import 'package:taxigo/screens/search_page.dart';
@@ -94,7 +95,25 @@ class _MainPageState extends State<MainPage> {
       ),
     );
 
+    await updateSearchArea();
+
     _addCurrentLocationToMapObjects(currentLocation);
+  }
+
+  Future<void> updateSearchArea() async {
+    search_area.SearchArea? newSearchArea;
+
+    (await mapControllerCompleter.future).getFocusRegion().then((value) {
+      newSearchArea?.lowerLeftLongitude = value.bottomLeft.longitude;
+      newSearchArea?.lowerLeftLatitude = value.bottomLeft.latitude;
+      newSearchArea?.upperRightLongitude = value.topRight.longitude;
+      newSearchArea?.upperRightLatitude = value.topRight.latitude;
+    });
+
+    if (newSearchArea != null && context.mounted) {
+      Provider.of<AppData>(context, listen: false)
+          .updateSearchArea(newSearchArea);
+    }
   }
 
   void _addCurrentLocationToMapObjects(address.Address currentLocation) {

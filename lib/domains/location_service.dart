@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:taxigo/datamodels/address.dart' as address;
 import 'package:taxigo/domains/app_location.dart';
+import 'package:taxigo/networkservice/api_keys.dart';
 import 'package:yandex_geocoder/yandex_geocoder.dart';
 
 class LocationService implements AppLocation {
   final defLocation = address.TashkentLocation();
   final YandexGeocoder geocoder =
-      YandexGeocoder(apiKey: "4f514936-fdfb-45af-8450-126838bdc0c9");
+      YandexGeocoder(apiKey: ApiKeys.yandexGeocoderAPIKey);
 
   @override
   Future<bool> checkPermission() {
