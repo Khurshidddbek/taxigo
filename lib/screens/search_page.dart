@@ -8,6 +8,7 @@ import 'package:taxigo/networkservice/query_parameters.dart';
 
 import '../datamodels/searched_address.dart';
 import '../networkservice/apis.dart';
+import '../networkservice/debouncer.dart';
 
 class SearchPage extends StatefulWidget {
   static const String id = "search_page";
@@ -22,19 +23,30 @@ class _SearchPageState extends State<SearchPage> {
   var destinationController = TextEditingController();
   List<SearchedAddress> searchedAddresses = [];
 
+  Debouncer debouncer = Debouncer(milliseconds: 1000);
+
   void searchPlaceByText(String text) async {
-    if (text.length < 3) return;
-
-    String? responeData = await HttpRequests.get(
-      Apis.searchPlaceByText,
-      QueryParameters.searchPlaceByText(
-        text: text,
-        searchArea: Provider.of<AppData>(context, listen: false).searchArea,
-      ),
-    );
-
     setState(() {
-      searchedAddresses = Parser.searchPlaceByText(responeData ?? "");
+      searchedAddresses = [];
+    });
+
+    if (text.length < 3) {
+      debouncer.cancel();
+      return;
+    }
+
+    debouncer.run(() async {
+      String? responeData = await HttpRequests.get(
+        Apis.searchPlaceByText,
+        QueryParameters.searchPlaceByText(
+          text: text,
+          searchArea: Provider.of<AppData>(context, listen: false).searchArea,
+        ),
+      );
+
+      setState(() {
+        searchedAddresses = Parser.searchPlaceByText(responeData ?? "");
+      });
     });
   }
 

@@ -5,6 +5,8 @@ class HttpRequests {
   static final dio = Dio();
 
   static Future<String?> get(String api, Map<String, dynamic> params) async {
+    print("get api is called");
+
     try {
       final response = await dio.get(api, queryParameters: params);
       if (response.statusCode == 200) return response.toString();
