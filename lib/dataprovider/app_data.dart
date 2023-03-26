@@ -4,6 +4,7 @@ import 'package:taxigo/datamodels/search_area.dart';
 
 class AppData extends ChangeNotifier {
   Address? currentLocation;
+  Address? searchedLocation;
   SearchArea? searchArea;
 
   void updateCurrentLocation(Address location) {
@@ -13,6 +14,11 @@ class AppData extends ChangeNotifier {
 
   void updateSearchArea(SearchArea newSearchArea) {
     searchArea = newSearchArea;
+    notifyListeners();
+  }
+
+  void updateSearchedLocation(Address location) {
+    searchedLocation = location;
     notifyListeners();
   }
 }

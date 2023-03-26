@@ -1,8 +1,14 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:taxigo/datamodels/address.dart' as address;
+import 'package:taxigo/datamodels/direction_details.dart';
 import 'package:taxigo/domains/app_location.dart';
 import 'package:taxigo/networkservice/api_keys.dart';
+import 'package:taxigo/networkservice/apis.dart';
+import 'package:taxigo/networkservice/http_requests.dart';
+import 'package:taxigo/networkservice/query_parameters.dart';
 import 'package:yandex_geocoder/yandex_geocoder.dart';
 
 class LocationService implements AppLocation {
@@ -60,6 +66,27 @@ class LocationService implements AppLocation {
       return geocodeFromPoint;
     } catch (e) {
       debugPrint("LocationService.getAddressByCordinates() Error: $e");
+      return null;
+    }
+  }
+
+  @override
+  Future<DirectionDetails?> getDirectionDetails(
+      address.Address start, address.Address end) async {
+    try {
+      final response = await HttpRequests.get(
+        Apis.directionDetails(start, end),
+        QueryParameters.directionDetails(),
+      );
+      final data = jsonDecode(response.toString());
+
+      return DirectionDetails(
+        encodedPoints: data['routes'][0]['geometry'],
+        durationInSeconds: data['routes'][0]['duration'],
+        distanceInMeters: data['routes'][0]['distance'],
+      );
+    } catch (e) {
+      debugPrint("LocationService.getDirectionDetails() Error: $e");
       return null;
     }
   }

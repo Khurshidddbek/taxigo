@@ -1,4 +1,5 @@
 import 'package:taxigo/datamodels/address.dart' as address;
+import 'package:taxigo/datamodels/direction_details.dart';
 import 'package:yandex_geocoder/yandex_geocoder.dart';
 
 abstract class AppLocation {
@@ -9,4 +10,6 @@ abstract class AppLocation {
   Future<address.Address> getCurrentLocation();
 
   Future<GeocodeResponse?> getAddressByCordinates(address.Address location);
+
+  Future<DirectionDetails?> getDirectionDetails(address.Address start, address.Address end);
 }

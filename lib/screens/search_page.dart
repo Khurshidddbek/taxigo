@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:taxigo/brand_colors.dart';
+import 'package:taxigo/datamodels/address.dart';
 import 'package:taxigo/dataprovider/app_data.dart';
 import 'package:taxigo/networkservice/http_requests.dart';
 import 'package:taxigo/networkservice/parser.dart';
@@ -169,7 +170,7 @@ class _SearchPageState extends State<SearchPage> {
                 itemCount: searchedAddresses.length,
                 itemBuilder: (context, index) =>
                     SearchedItem(searchedAddress: searchedAddresses[index]),
-                separatorBuilder: (context, index) => const Divider(),
+                separatorBuilder: (context, index) => const Divider(height: 1),
               ),
             ),
           ],
@@ -188,32 +189,42 @@ class SearchedItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      child: Row(
-        children: [
-          const Icon(
-            Icons.location_on_outlined,
-            color: BrandColors.dimText,
-          ),
+    return InkWell(
+      onTap: () {
+        Provider.of<AppData>(context, listen: false).updateSearchedLocation(
+            Address(
+                latitude: searchedAddress.coordinateLatitude,
+                longitude: searchedAddress.coordinateLongitude));
 
-          const SizedBox(width: 10),
-
-          // #searched address info
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(searchedAddress.name),
-                const SizedBox(height: 5),
-                Text(
-                  searchedAddress.address,
-                  style: const TextStyle(color: BrandColors.dimText),
-                ),
-              ],
+        Navigator.pop(context, "getDirection");
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+        child: Row(
+          children: [
+            const Icon(
+              Icons.location_on_outlined,
+              color: BrandColors.dimText,
             ),
-          ),
-        ],
+
+            const SizedBox(width: 10),
+
+            // #searched address info
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(searchedAddress.name),
+                  const SizedBox(height: 5),
+                  Text(
+                    searchedAddress.address,
+                    style: const TextStyle(color: BrandColors.dimText),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

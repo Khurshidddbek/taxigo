@@ -2,8 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:provider/provider.dart';
 import 'package:taxigo/datamodels/address.dart' as address;
+import 'package:taxigo/datamodels/direction_details.dart';
 import 'package:taxigo/datamodels/search_area.dart' as search_area;
 import 'package:taxigo/dataprovider/app_data.dart';
 import 'package:taxigo/domains/location_service.dart';
@@ -12,6 +14,7 @@ import 'package:yandex_geocoder/yandex_geocoder.dart';
 import 'package:yandex_mapkit/yandex_mapkit.dart' as y_mapkit;
 
 import '../brand_colors.dart';
+import '../widgets/progress_dialog_widget.dart';
 
 class MainPage extends StatefulWidget {
   static const String id = "main";
@@ -135,6 +138,58 @@ class _MainPageState extends State<MainPage> {
         ),
       );
     });
+  }
+
+  Future<void> getDirection() async {
+    // show loading dialog
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (context) => const ProgressDialog(status: "Please wait..."),
+    );
+
+    var appDataProvider = Provider.of<AppData>(context, listen: false);
+    address.Address? pickup = appDataProvider.currentLocation;
+    address.Address? destination = appDataProvider.searchedLocation;
+
+    if (pickup == null || destination == null) {
+      showSnackbar("Current location is not available, please try again");
+      return;
+    }
+
+    DirectionDetails? directionDetails =
+        await LocationService().getDirectionDetails(pickup, destination);
+
+    // close loading dialog
+    if (context.mounted) {
+      Navigator.pop(context);
+    }
+
+    // #add points (direction) to map
+    if (directionDetails != null) {
+      final List<y_mapkit.Point> points = [];
+
+      for (var point
+          in PolylinePoints().decodePolyline(directionDetails.encodedPoints)) {
+        points.add(y_mapkit.Point(
+            latitude: point.latitude, longitude: point.longitude));
+      }
+
+      final mapObject = y_mapkit.PolylineMapObject(
+        mapId: const y_mapkit.MapObjectId('polyline'),
+        polyline: y_mapkit.Polyline(points: points),
+      );
+
+      setState(() {
+        mapObjects.add(mapObject);
+      });
+    }
+  }
+
+  void showSnackbar(String? text) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Center(child: Text(text ?? "")),
+    ));
   }
 
   // ===========================================================================
@@ -344,8 +399,13 @@ class _MainPageState extends State<MainPage> {
 
                         // #search
                         GestureDetector(
-                          onTap: () {
-                            Navigator.pushNamed(context, SearchPage.id);
+                          onTap: () async {
+                            var result = await Navigator.pushNamed(
+                                context, SearchPage.id);
+
+                            if (result == "getDirection") {
+                              getDirection();
+                            }
                           },
                           child: Container(
                             padding: const EdgeInsets.all(12),

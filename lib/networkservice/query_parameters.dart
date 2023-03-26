@@ -14,4 +14,6 @@ class QueryParameters {
           "bbox":
               "${"${searchArea.lowerLeftLongitude},${searchArea.lowerLeftLatitude}~${searchArea.upperRightLongitude}"},${searchArea.upperRightLatitude}",
       };
+
+  static Map<String, dynamic> directionDetails() => {'geometries': 'polyline'};
 }
