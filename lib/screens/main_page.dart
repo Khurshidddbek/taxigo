@@ -155,6 +155,11 @@ class _MainPageState extends State<MainPage> {
     address.Address? destination = appDataProvider.searchedLocation;
 
     if (pickup == null || destination == null) {
+      // close loading dialog
+      if (context.mounted) {
+        Navigator.pop(context);
+      }
+
       showSnackbar("Current location is not available, please try again");
       return;
     }
@@ -167,28 +172,35 @@ class _MainPageState extends State<MainPage> {
       Navigator.pop(context);
     }
 
-    // #add points (direction) to map
-    if (directionDetails != null) {
-      final List<y_mapkit.Point> points = [];
+    if (directionDetails == null) {
+      // cleaning up the old
+      mapObjects.removeWhere(
+          (e) => e.mapId == const y_mapkit.MapObjectId('polyline'));
+      setState(() {});
 
-      for (var point
-          in PolylinePoints().decodePolyline(directionDetails.encodedPoints)) {
-        points.add(y_mapkit.Point(
-            latitude: point.latitude, longitude: point.longitude));
-      }
-
-      final mapObject = y_mapkit.PolylineMapObject(
-        mapId: const y_mapkit.MapObjectId('polyline'),
-        polyline: y_mapkit.Polyline(points: points),
-      );
-
-      setState(() {
-        mapObjects.add(mapObject);
-      });
-
-      zoomCameraToFitPolylineOnScreen(
-          points, directionDetails.distanceInMeters);
+      showSnackbar("Connection failed, please try again");
+      return;
     }
+
+    // #add points (direction) to map
+    final List<y_mapkit.Point> points = [];
+
+    for (var point
+        in PolylinePoints().decodePolyline(directionDetails.encodedPoints)) {
+      points.add(
+          y_mapkit.Point(latitude: point.latitude, longitude: point.longitude));
+    }
+
+    final mapObject = y_mapkit.PolylineMapObject(
+      mapId: const y_mapkit.MapObjectId('polyline'),
+      polyline: y_mapkit.Polyline(points: points),
+    );
+
+    setState(() {
+      mapObjects.add(mapObject);
+    });
+
+    zoomCameraToFitPolylineOnScreen(points, directionDetails.distanceInMeters);
   }
 
   void showSnackbar(String? text) {

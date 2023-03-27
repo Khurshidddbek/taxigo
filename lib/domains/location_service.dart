@@ -82,8 +82,10 @@ class LocationService implements AppLocation {
 
       return DirectionDetails(
         encodedPoints: data['routes'][0]['geometry'],
-        durationInSeconds: data['routes'][0]['duration'],
-        distanceInMeters: data['routes'][0]['distance'],
+        durationInSeconds:
+            double.parse(data['routes'][0]['duration'].toString()),
+        distanceInMeters:
+            double.parse(data['routes'][0]['distance'].toString()),
       );
     } catch (e) {
       debugPrint("LocationService.getDirectionDetails() Error: $e");
