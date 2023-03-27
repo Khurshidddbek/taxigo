@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -79,11 +80,12 @@ class _MainPageState extends State<MainPage> {
       Provider.of<AppData>(context, listen: false)
           .updateCurrentLocation(currentLocation);
 
-      _moveToCurrentLocation(currentLocation);
+      _moveCameraToCurrentLocation(currentLocation);
     }
   }
 
-  Future<void> _moveToCurrentLocation(address.Address currentLocation) async {
+  Future<void> _moveCameraToCurrentLocation(
+      address.Address currentLocation) async {
     (await mapControllerCompleter.future).moveCamera(
       animation: const y_mapkit.MapAnimation(
           type: y_mapkit.MapAnimationType.smooth, duration: 1),
@@ -183,6 +185,9 @@ class _MainPageState extends State<MainPage> {
       setState(() {
         mapObjects.add(mapObject);
       });
+
+      zoomCameraToFitPolylineOnScreen(
+          points, directionDetails.distanceInMeters);
     }
   }
 
@@ -190,6 +195,62 @@ class _MainPageState extends State<MainPage> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Center(child: Text(text ?? "")),
     ));
+  }
+
+  void zoomCameraToFitPolylineOnScreen(
+      List<y_mapkit.Point> points, double distanceInMeters) async {
+    if (points.length < 2) {
+      return;
+    }
+
+    // Calculate the bounding box of the polyline
+    // approximately 0.000001 per kilometer.
+    late double bboxMargin;
+    if (distanceInMeters <= 1000) {
+      bboxMargin = 0.001;
+    } else {
+      bboxMargin = distanceInMeters > 50000
+          ? distanceInMeters * 0.000001
+          : distanceInMeters * 0.0000015;
+    }
+
+    final lats = points.map((p) => p.latitude);
+    final lons = points.map((p) => p.longitude);
+
+    final northEast = y_mapkit.Point(
+        latitude: lats.reduce(max) + bboxMargin,
+        longitude: lons.reduce(max) + bboxMargin);
+    final southWest = y_mapkit.Point(
+        latitude: lats.reduce(min) - bboxMargin,
+        longitude: lons.reduce(min) - bboxMargin);
+
+    final bbox =
+        y_mapkit.BoundingBox(northEast: northEast, southWest: southWest);
+
+    var mapController = await mapControllerCompleter.future;
+
+    // Calculate the zoom level required to fit the polyline on the screen
+    mapController.moveCamera(
+      animation: const y_mapkit.MapAnimation(
+          type: y_mapkit.MapAnimationType.smooth, duration: 1),
+      y_mapkit.CameraUpdate.newCameraPosition(
+        y_mapkit.CameraPosition(
+          target: y_mapkit.Point(
+            latitude: (bbox.northEast.latitude + bbox.southWest.latitude) / 2,
+            longitude:
+                (bbox.northEast.longitude + bbox.southWest.longitude) / 2,
+          ),
+          // zoom: 15,
+        ),
+      ),
+    );
+
+    // Set bounding box
+    mapController.moveCamera(
+      animation: const y_mapkit.MapAnimation(
+          type: y_mapkit.MapAnimationType.smooth, duration: 1),
+      y_mapkit.CameraUpdate.newBounds(bbox),
+    );
   }
 
   // ===========================================================================
@@ -284,11 +345,18 @@ class _MainPageState extends State<MainPage> {
       body: Stack(
         children: [
           // #map
-          y_mapkit.YandexMap(
-            mapObjects: mapObjects,
-            onMapCreated: (controller) {
-              mapControllerCompleter.complete(controller);
-            },
+          Positioned(
+            left: 0,
+            right: 0,
+            child: SizedBox(
+              height: MediaQuery.of(context).size.height - 280,
+              child: y_mapkit.YandexMap(
+                mapObjects: mapObjects,
+                onMapCreated: (controller) {
+                  mapControllerCompleter.complete(controller);
+                },
+              ),
+            ),
           ),
 
           // #drawer call button
@@ -319,6 +387,7 @@ class _MainPageState extends State<MainPage> {
             ),
           ),
 
+          // #bottomsheet
           Positioned(
             left: 0,
             right: 0,
