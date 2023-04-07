@@ -200,6 +200,7 @@ class _MainPageState extends State<MainPage> {
       mapObjects.add(mapObject);
     });
 
+    addPickupAndDestionIconsToMapObjects(pickup, destination);
     zoomCameraToFitPolylineOnScreen(points, directionDetails.distanceInMeters);
   }
 
@@ -263,6 +264,39 @@ class _MainPageState extends State<MainPage> {
           type: y_mapkit.MapAnimationType.smooth, duration: 1),
       y_mapkit.CameraUpdate.newBounds(bbox),
     );
+  }
+
+  void addPickupAndDestionIconsToMapObjects(
+      address.Address pickup, address.Address destination) {
+    // cleaning up the old
+    setState(() {
+      mapObjects.removeWhere(
+          (e) => e.mapId == const y_mapkit.MapObjectId('pickup_location'));
+      mapObjects.removeWhere(
+          (e) => e.mapId == const y_mapkit.MapObjectId('destination_location'));
+    });
+
+    _addCurrentLocationToMapObjects(pickup);
+
+    setState(() {
+      mapObjects.add(
+        y_mapkit.PlacemarkMapObject(
+          mapId: const y_mapkit.MapObjectId('destination_location'),
+          point: y_mapkit.Point(
+            latitude: destination.latitude,
+            longitude: destination.longitude,
+          ),
+          icon: y_mapkit.PlacemarkIcon.single(
+            y_mapkit.PlacemarkIconStyle(
+              scale: 1,
+              image: y_mapkit.BitmapDescriptor.fromAssetImage(
+                  'assets/images/route_start.png'),
+            ),
+          ),
+          opacity: 1,
+        ),
+      );
+    });
   }
 
   // ===========================================================================
@@ -411,7 +445,9 @@ class _MainPageState extends State<MainPage> {
                 Padding(
                   padding: const EdgeInsets.only(right: 20, bottom: 20),
                   child: GestureDetector(
-                    onTap: () => _initLocationPermission(),
+                    // onTap: () => _initLocationPermission(),
+                    // #testing
+                    onTap: () => getDirection(),
                     child: DecoratedBox(
                       decoration: const BoxDecoration(
                         shape: BoxShape.circle,
