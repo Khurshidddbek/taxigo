@@ -125,6 +125,23 @@ class _MainPageState extends State<MainPage> {
     setState(() {
       mapObjects.add(
         y_mapkit.PlacemarkMapObject(
+          mapId: const y_mapkit.MapObjectId('current_location_radius'),
+          point: y_mapkit.Point(
+            latitude: currentLocation.latitude,
+            longitude: currentLocation.longitude,
+          ),
+          icon: y_mapkit.PlacemarkIcon.single(
+            y_mapkit.PlacemarkIconStyle(
+              scale: 3,
+              image: y_mapkit.BitmapDescriptor.fromAssetImage(
+                  'assets/images/pickicon.png'),
+            ),
+          ),
+          opacity: .35,
+        ),
+      );
+      mapObjects.add(
+        y_mapkit.PlacemarkMapObject(
           mapId: const y_mapkit.MapObjectId('current_location'),
           point: y_mapkit.Point(
             latitude: currentLocation.latitude,
@@ -132,11 +149,12 @@ class _MainPageState extends State<MainPage> {
           ),
           icon: y_mapkit.PlacemarkIcon.single(
             y_mapkit.PlacemarkIconStyle(
-              scale: 2.5,
+              scale: 1.5,
               image: y_mapkit.BitmapDescriptor.fromAssetImage(
                   'assets/images/pickicon.png'),
             ),
           ),
+          opacity: 1,
         ),
       );
     });
@@ -268,14 +286,6 @@ class _MainPageState extends State<MainPage> {
 
   void addPickupAndDestionIconsToMapObjects(
       address.Address pickup, address.Address destination) {
-    // cleaning up the old
-    setState(() {
-      mapObjects.removeWhere(
-          (e) => e.mapId == const y_mapkit.MapObjectId('pickup_location'));
-      mapObjects.removeWhere(
-          (e) => e.mapId == const y_mapkit.MapObjectId('destination_location'));
-    });
-
     _addCurrentLocationToMapObjects(pickup);
 
     setState(() {
