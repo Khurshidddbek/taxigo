@@ -11,6 +11,7 @@ import 'package:taxigo/datamodels/search_area.dart' as search_area;
 import 'package:taxigo/dataprovider/app_data.dart';
 import 'package:taxigo/domains/location_service.dart';
 import 'package:taxigo/screens/search_page.dart';
+import 'package:taxigo/widgets/button_widget.dart';
 import 'package:yandex_geocoder/yandex_geocoder.dart';
 import 'package:yandex_mapkit/yandex_mapkit.dart' as y_mapkit;
 
@@ -627,6 +628,138 @@ class _MainPageState extends State<MainPage> {
                             ),
                           ],
                         ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // #bottomsheet: Ride Details
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                // #bottomsheet
+                Container(
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(15),
+                      topRight: Radius.circular(15),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 15,
+                        spreadRadius: .5,
+                        offset: Offset(.7, .7),
+                      ),
+                    ],
+                  ),
+                  child: SafeArea(
+                    top: false,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 20),
+
+                        // destination and price
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 10,
+                          ),
+                          color: BrandColors.accent1,
+                          child: Row(
+                            children: [
+                              Image.asset(
+                                "assets/images/taxi.png",
+                                height: 70,
+                                width: 70,
+                              ),
+
+                              const SizedBox(width: 10),
+
+                              // #distance in meters
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: const [
+                                  Text(
+                                    "Taxi",
+                                    style: TextStyle(
+                                      fontFamily: "Brand-Bold",
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  Text(
+                                    "14 km",
+                                    style: TextStyle(
+                                      color: BrandColors.dimText,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                              const Spacer(),
+
+                              // #price
+                              const Text(
+                                "\$13",
+                                style: TextStyle(
+                                  fontFamily: "Brand-Bold",
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        // #cash
+                        Row(
+                          children: const [
+                            SizedBox(width: 20),
+                            Icon(
+                              Icons.money_rounded,
+                              color: BrandColors.dimText,
+                            ),
+                            SizedBox(width: 10),
+                            Text(
+                              "Cash",
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: BrandColors.dimText,
+                                fontFamily: "Brand-Bold",
+                              ),
+                            ),
+                            SizedBox(width: 5),
+                            Icon(
+                              Icons.keyboard_arrow_down,
+                              color: BrandColors.dimText,
+                              size: 16,
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: TaxiButton(
+                            title: "REQUEST CAB",
+                            color: BrandColors.accent,
+                            onPressed: () {},
+                          ),
+                        ),
+
+                        const SizedBox(height: 40),
                       ],
                     ),
                   ),
