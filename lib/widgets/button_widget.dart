@@ -20,7 +20,7 @@ class TaxiButton extends StatelessWidget {
       borderRadius: BorderRadius.circular(24),
       onPressed: () => onPressed(),
       child: SizedBox(
-        height: 40,
+        height: 25,
         child: Center(
           child: Text(
             title,

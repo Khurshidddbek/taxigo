@@ -37,6 +37,12 @@ class MyApp extends StatelessWidget {
           MainPage.id: (context) => const MainPage(),
           SearchPage.id: (context) => const SearchPage(),
         },
+        builder: (context, child) {
+          return MediaQuery(
+            data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+            child: child!,
+          );
+        },
       ),
     );
   }
