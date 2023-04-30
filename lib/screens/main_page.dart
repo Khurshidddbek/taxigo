@@ -33,6 +33,10 @@ class _MainPageState extends State<MainPage> {
   late final List<y_mapkit.MapObject> mapObjects = [];
   bool showLocationLoading = false;
 
+  double searchSheetHeight = 290;
+  double rideSheetHeight = 0; // 270
+  double mapBottomPaddingHeight = 286; // sheetHeight - 4
+
   @override
   void initState() {
     super.initState();
@@ -310,6 +314,13 @@ class _MainPageState extends State<MainPage> {
     });
   }
 
+  void showRideSheet() async {
+    rideSheetHeight = 270;
+    searchSheetHeight = 0;
+    mapBottomPaddingHeight = rideSheetHeight - 4;
+    setState(() {});
+  }
+
   // ===========================================================================
 
   @override
@@ -405,13 +416,23 @@ class _MainPageState extends State<MainPage> {
           Positioned(
             left: 0,
             right: 0,
-            child: SizedBox(
-              height: MediaQuery.of(context).size.height - 280,
-              child: y_mapkit.YandexMap(
-                mapObjects: mapObjects,
-                onMapCreated: (controller) {
-                  mapControllerCompleter.complete(controller);
-                },
+            child: AnimatedSize(
+              duration: kThemeAnimationDuration,
+              curve: Curves.easeIn,
+              child: SizedBox(
+                height: MediaQuery.of(context).size.height -
+                    MediaQuery.of(context).padding.bottom -
+                    mapBottomPaddingHeight,
+                child: y_mapkit.YandexMap(
+                  mapObjects: mapObjects,
+                  onMapCreated: (controller) {
+                    mapControllerCompleter.complete(controller);
+                  },
+                  logoAlignment: const y_mapkit.MapAlignment(
+                    horizontal: y_mapkit.HorizontalAlignment.left,
+                    vertical: y_mapkit.VerticalAlignment.bottom,
+                  ),
+                ),
               ),
             ),
           ),
@@ -444,7 +465,7 @@ class _MainPageState extends State<MainPage> {
             ),
           ),
 
-          // #bottomsheet
+          // #bottomsheets
           Positioned(
             left: 0,
             right: 0,
@@ -490,277 +511,299 @@ class _MainPageState extends State<MainPage> {
                   ),
                 ),
 
-                // #bottomsheet
-                Container(
-                  padding: const EdgeInsets.all(24),
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(15),
-                      topRight: Radius.circular(15),
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black26,
-                        blurRadius: 15,
-                        spreadRadius: .5,
-                        offset: Offset(.7, .7),
-                      ),
-                    ],
-                  ),
+                // #searchsheet
+                AnimatedSize(
+                  duration: kThemeAnimationDuration,
+                  curve: Curves.easeIn,
                   child: SafeArea(
                     top: false,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          "Nice to see you!",
-                          style: TextStyle(fontSize: 12),
+                    left: false,
+                    right: false,
+                    bottom: searchSheetHeight == 0 ? false : true,
+                    child: Container(
+                      height: searchSheetHeight,
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[50],
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(10),
+                          topRight: Radius.circular(10),
                         ),
-                        const Text(
-                          "Where are you going?",
-                          style:
-                              TextStyle(fontFamily: "Brand-Bold", fontSize: 18),
-                        ),
-
-                        const SizedBox(height: 20),
-
-                        // #search
-                        GestureDetector(
-                          onTap: () async {
-                            var result = await Navigator.pushNamed(
-                                context, SearchPage.id);
-
-                            if (result == "getDirection") {
-                              getDirection();
-                            }
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(4),
-                              boxShadow: const [
-                                BoxShadow(
-                                  color: Colors.black12,
-                                  blurRadius: 5,
-                                  spreadRadius: .5,
-                                  offset: Offset(.7, .7),
-                                ),
-                              ],
-                            ),
-                            child: Row(
-                              children: const [
-                                Icon(
-                                  CupertinoIcons.search,
-                                  color: Colors.blueAccent,
-                                ),
-                                SizedBox(width: 10),
-                                Text("Search destination"),
-                              ],
-                            ),
+                        boxShadow: [
+                          const BoxShadow(
+                            color: Colors.black26,
+                            blurRadius: 10,
+                            spreadRadius: .5,
+                            offset: Offset(0, -.7),
                           ),
-                        ),
-
-                        const SizedBox(height: 20),
-
-                        // #home
-                        Row(
+                          BoxShadow(
+                            color: Colors.grey[50]!,
+                            offset: const Offset(0, 15),
+                          ),
+                        ],
+                      ),
+                      child: SafeArea(
+                        top: false,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Icon(
-                              Icons.home_outlined,
+                            const Text(
+                              "Nice to see you!",
+                              style: TextStyle(fontSize: 12),
+                            ),
+                            const Text(
+                              "Where are you going?",
+                              style: TextStyle(
+                                  fontFamily: "Brand-Bold", fontSize: 18),
+                            ),
+
+                            const SizedBox(height: 20),
+
+                            // #search
+                            GestureDetector(
+                              onTap: () async {
+                                var result = await Navigator.pushNamed(
+                                    context, SearchPage.id);
+
+                                if (result == "getDirection") {
+                                  showRideSheet();
+                                  getDirection();
+                                }
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(4),
+                                  boxShadow: const [
+                                    BoxShadow(
+                                      color: Colors.black12,
+                                      blurRadius: 5,
+                                      spreadRadius: .5,
+                                      offset: Offset(.7, .7),
+                                    ),
+                                  ],
+                                ),
+                                child: Row(
+                                  children: const [
+                                    Icon(
+                                      CupertinoIcons.search,
+                                      color: Colors.blueAccent,
+                                    ),
+                                    SizedBox(width: 10),
+                                    Text("Search destination"),
+                                  ],
+                                ),
+                              ),
+                            ),
+
+                            const SizedBox(height: 20),
+
+                            // #home
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.home_outlined,
+                                  color: BrandColors.dimText,
+                                ),
+                                const SizedBox(width: 12),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: const [
+                                    Text(
+                                      "Add Home",
+                                      style: TextStyle(
+                                        fontFamily: "Brand-Bold",
+                                        color: BrandColors.textSemiLight,
+                                      ),
+                                    ),
+                                    Text(
+                                      "Your residential address",
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: BrandColors.dimText,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+
+                            const Divider(
+                              height: 40,
                               color: BrandColors.dimText,
                             ),
-                            const SizedBox(width: 12),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: const [
-                                Text(
-                                  "Add Home",
-                                  style: TextStyle(
-                                    fontFamily: "Brand-Bold",
-                                    color: BrandColors.textSemiLight,
-                                  ),
+
+                            // #work
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.work_outline,
+                                  color: BrandColors.dimText,
                                 ),
-                                Text(
-                                  "Your residential address",
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: BrandColors.dimText,
-                                  ),
+                                const SizedBox(width: 12),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: const [
+                                    Text(
+                                      "Add Work",
+                                      style: TextStyle(
+                                        fontFamily: "Brand-Bold",
+                                        color: BrandColors.textSemiLight,
+                                      ),
+                                    ),
+                                    Text(
+                                      "Your office address",
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: BrandColors.dimText,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
                           ],
                         ),
-
-                        const Divider(
-                          height: 40,
-                          color: BrandColors.dimText,
-                        ),
-
-                        // #work
-                        Row(
-                          children: [
-                            const Icon(
-                              Icons.work_outline,
-                              color: BrandColors.dimText,
-                            ),
-                            const SizedBox(width: 12),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: const [
-                                Text(
-                                  "Add Work",
-                                  style: TextStyle(
-                                    fontFamily: "Brand-Bold",
-                                    color: BrandColors.textSemiLight,
-                                  ),
-                                ),
-                                Text(
-                                  "Your office address",
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: BrandColors.dimText,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                 ),
-              ],
-            ),
-          ),
 
-          // #bottomsheet: Ride Details
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                // #bottomsheet
-                Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(15),
-                      topRight: Radius.circular(15),
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black26,
-                        blurRadius: 15,
-                        spreadRadius: .5,
-                        offset: Offset(.7, .7),
-                      ),
-                    ],
-                  ),
+                // #ridesheet
+                AnimatedSize(
+                  duration: kThemeAnimationDuration,
+                  curve: Curves.easeIn,
                   child: SafeArea(
                     top: false,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 20),
-
-                        // destination and price
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 10,
+                    left: false,
+                    right: false,
+                    bottom: rideSheetHeight == 0 ? false : true,
+                    child: Container(
+                      height: rideSheetHeight,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[50]!,
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(10),
+                          topRight: Radius.circular(10),
+                        ),
+                        boxShadow: [
+                          const BoxShadow(
+                            color: Colors.black26,
+                            blurRadius: 10,
+                            spreadRadius: .5,
+                            offset: Offset(0, -.7),
                           ),
-                          color: BrandColors.accent1,
-                          child: Row(
-                            children: [
-                              Image.asset(
-                                "assets/images/taxi.png",
-                                height: 70,
-                                width: 70,
+                          BoxShadow(
+                            color: Colors.grey[50]!,
+                            offset: const Offset(0, 15),
+                          ),
+                        ],
+                      ),
+                      child: SafeArea(
+                        top: false,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 20),
+
+                            // destination and price
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 10,
                               ),
+                              color: BrandColors.accent1,
+                              child: Row(
+                                children: [
+                                  Image.asset(
+                                    "assets/images/taxi.png",
+                                    height: 70,
+                                    width: 70,
+                                  ),
 
-                              const SizedBox(width: 10),
+                                  const SizedBox(width: 10),
 
-                              // #distance in meters
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: const [
-                                  Text(
-                                    "Taxi",
+                                  // #distance in meters
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: const [
+                                      Text(
+                                        "Taxi",
+                                        style: TextStyle(
+                                          fontFamily: "Brand-Bold",
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                      Text(
+                                        "14 km",
+                                        style: TextStyle(
+                                          color: BrandColors.dimText,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+
+                                  const Spacer(),
+
+                                  // #price
+                                  const Text(
+                                    "\$13",
                                     style: TextStyle(
                                       fontFamily: "Brand-Bold",
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                  Text(
-                                    "14 km",
-                                    style: TextStyle(
-                                      color: BrandColors.dimText,
-                                      fontSize: 14,
+                                      fontSize: 18,
                                     ),
                                   ),
                                 ],
                               ),
+                            ),
 
-                              const Spacer(),
+                            const SizedBox(height: 20),
 
-                              // #price
-                              const Text(
-                                "\$13",
-                                style: TextStyle(
-                                  fontFamily: "Brand-Bold",
-                                  fontSize: 18,
+                            // #cash
+                            Row(
+                              children: const [
+                                SizedBox(width: 20),
+                                Icon(
+                                  Icons.money_rounded,
+                                  color: BrandColors.dimText,
                                 ),
-                              ),
-                            ],
-                          ),
-                        ),
+                                SizedBox(width: 10),
+                                Text(
+                                  "Cash",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: BrandColors.dimText,
+                                    fontFamily: "Brand-Bold",
+                                  ),
+                                ),
+                                SizedBox(width: 5),
+                                Icon(
+                                  Icons.keyboard_arrow_down,
+                                  color: BrandColors.dimText,
+                                  size: 16,
+                                ),
+                              ],
+                            ),
 
-                        const SizedBox(height: 20),
+                            const SizedBox(height: 20),
 
-                        // #cash
-                        Row(
-                          children: const [
-                            SizedBox(width: 20),
-                            Icon(
-                              Icons.money_rounded,
-                              color: BrandColors.dimText,
-                            ),
-                            SizedBox(width: 10),
-                            Text(
-                              "Cash",
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: BrandColors.dimText,
-                                fontFamily: "Brand-Bold",
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20),
+                              child: TaxiButton(
+                                title: "REQUEST CAB",
+                                color: BrandColors.accent,
+                                onPressed: () {},
                               ),
                             ),
-                            SizedBox(width: 5),
-                            Icon(
-                              Icons.keyboard_arrow_down,
-                              color: BrandColors.dimText,
-                              size: 16,
-                            ),
+
+                            const SizedBox(height: 40),
                           ],
                         ),
-
-                        const SizedBox(height: 20),
-
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: TaxiButton(
-                            title: "REQUEST CAB",
-                            color: BrandColors.accent,
-                            onPressed: () {},
-                          ),
-                        ),
-
-                        const SizedBox(height: 40),
-                      ],
+                      ),
                     ),
                   ),
                 ),
