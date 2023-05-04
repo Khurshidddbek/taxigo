@@ -39,6 +39,8 @@ class _MainPageState extends State<MainPage> {
   double rideSheetHeight = 0; // 270
   double mapBottomPaddingHeight = 286; // sheetHeight - 4
 
+  bool get drawerCanOpen => rideSheetHeight == 0;
+
   @override
   void initState() {
     super.initState();
@@ -323,6 +325,17 @@ class _MainPageState extends State<MainPage> {
     setState(() {});
   }
 
+  void hideRideSheetAndResetMap() {
+    rideSheetHeight = 0;
+    searchSheetHeight = 290;
+    mapBottomPaddingHeight = 286;
+    mapObjects.clear();
+
+    setState(() {});
+
+    _initLocationPermission();
+  }
+
   double estimateFares(DirectionDetails? directionDetails) {
     if (directionDetails == null) return 0;
 
@@ -468,9 +481,13 @@ class _MainPageState extends State<MainPage> {
             left: 20,
             child: SafeArea(
               child: GestureDetector(
-                onTap: () => _scaffoldKey.currentState?.openDrawer(),
-                child: const DecoratedBox(
-                  decoration: BoxDecoration(
+                onTap: () {
+                  drawerCanOpen
+                      ? _scaffoldKey.currentState?.openDrawer()
+                      : hideRideSheetAndResetMap();
+                },
+                child: DecoratedBox(
+                  decoration: const BoxDecoration(
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
@@ -483,7 +500,8 @@ class _MainPageState extends State<MainPage> {
                   ),
                   child: CircleAvatar(
                     backgroundColor: Colors.white,
-                    child: Icon(Icons.menu, color: Colors.black87),
+                    child: Icon(drawerCanOpen ? Icons.menu : Icons.arrow_back,
+                        color: Colors.black87),
                   ),
                 ),
               ),
@@ -502,9 +520,7 @@ class _MainPageState extends State<MainPage> {
                 Padding(
                   padding: const EdgeInsets.only(right: 20, bottom: 20),
                   child: GestureDetector(
-                    // onTap: () => _initLocationPermission(),
-                    // #testing
-                    onTap: () => getDirection(),
+                    onTap: () => _initLocationPermission(),
                     child: DecoratedBox(
                       decoration: const BoxDecoration(
                         shape: BoxShape.circle,
