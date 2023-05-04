@@ -33,6 +33,8 @@ class _MainPageState extends State<MainPage> {
   late final List<y_mapkit.MapObject> mapObjects = [];
   bool showLocationLoading = false;
 
+  DirectionDetails? directionDetails;
+
   double searchSheetHeight = 290;
   double rideSheetHeight = 0; // 270
   double mapBottomPaddingHeight = 286; // sheetHeight - 4
@@ -187,7 +189,7 @@ class _MainPageState extends State<MainPage> {
       return;
     }
 
-    DirectionDetails? directionDetails =
+    directionDetails =
         await LocationService().getDirectionDetails(pickup, destination);
 
     // close loading dialog
@@ -209,7 +211,7 @@ class _MainPageState extends State<MainPage> {
     final List<y_mapkit.Point> points = [];
 
     for (var point
-        in PolylinePoints().decodePolyline(directionDetails.encodedPoints)) {
+        in PolylinePoints().decodePolyline(directionDetails!.encodedPoints)) {
       points.add(
           y_mapkit.Point(latitude: point.latitude, longitude: point.longitude));
     }
@@ -224,7 +226,7 @@ class _MainPageState extends State<MainPage> {
     });
 
     addPickupAndDestionIconsToMapObjects(pickup, destination);
-    zoomCameraToFitPolylineOnScreen(points, directionDetails.distanceInMeters);
+    zoomCameraToFitPolylineOnScreen(points, directionDetails!.distanceInMeters);
   }
 
   void showSnackbar(String? text) {
@@ -319,6 +321,29 @@ class _MainPageState extends State<MainPage> {
     searchSheetHeight = 0;
     mapBottomPaddingHeight = rideSheetHeight - 4;
     setState(() {});
+  }
+
+  double estimateFares(DirectionDetails? directionDetails) {
+    if (directionDetails == null) return 0;
+
+    /// any estimate fares can be here.
+    /// here the prices in Uzbekistan are taken as an example.
+    const double baseFare = 6500.0; // base fare in Uzbekistan Som (UZS)
+    const double perKmCharge = 1500.0; // per kilometer charge in UZS
+    const double perMinCharge = 500.0; // per minute charge in UZS
+    const double usdToUzsRate = 11393.65; // conversion rate from USD to UZS
+
+    double distanceInKm = directionDetails.distanceInMeters / 1000.0;
+    double durationInMin = directionDetails.durationInSeconds / 60.0;
+
+    double fare = baseFare +
+        (distanceInKm * perKmCharge) +
+        (durationInMin * perMinCharge);
+
+    // convert fare from UZS to USD
+    double fareInUsd = fare / usdToUzsRate;
+
+    return fareInUsd;
   }
 
   // ===========================================================================
@@ -566,8 +591,8 @@ class _MainPageState extends State<MainPage> {
                                     context, SearchPage.id);
 
                                 if (result == "getDirection") {
+                                  await getDirection();
                                   showRideSheet();
-                                  getDirection();
                                 }
                               },
                               child: Container(
@@ -728,8 +753,8 @@ class _MainPageState extends State<MainPage> {
                                   Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
-                                    children: const [
-                                      Text(
+                                    children: [
+                                      const Text(
                                         "Taxi",
                                         style: TextStyle(
                                           fontFamily: "Brand-Bold",
@@ -737,8 +762,8 @@ class _MainPageState extends State<MainPage> {
                                         ),
                                       ),
                                       Text(
-                                        "14 km",
-                                        style: TextStyle(
+                                        "${(directionDetails?.distanceInKilometers ?? 0).toStringAsFixed(2)} km",
+                                        style: const TextStyle(
                                           color: BrandColors.dimText,
                                           fontSize: 14,
                                         ),
@@ -749,9 +774,9 @@ class _MainPageState extends State<MainPage> {
                                   const Spacer(),
 
                                   // #price
-                                  const Text(
-                                    "\$13",
-                                    style: TextStyle(
+                                  Text(
+                                    "\$${estimateFares(directionDetails).toStringAsFixed(2)}",
+                                    style: const TextStyle(
                                       fontFamily: "Brand-Bold",
                                       fontSize: 18,
                                     ),

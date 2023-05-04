@@ -8,4 +8,6 @@ class DirectionDetails {
     required this.durationInSeconds,
     required this.distanceInMeters,
   });
+
+  double get distanceInKilometers => distanceInMeters / 1000;
 }
