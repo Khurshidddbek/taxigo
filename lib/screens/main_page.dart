@@ -37,6 +37,7 @@ class _MainPageState extends State<MainPage> {
 
   double searchSheetHeight = 290;
   double rideSheetHeight = 0; // 270
+  double requestingSheetHeight = 0; // 220
   double mapBottomPaddingHeight = 286; // sheetHeight - 4
 
   bool get drawerCanOpen => rideSheetHeight == 0;
@@ -318,10 +319,17 @@ class _MainPageState extends State<MainPage> {
     });
   }
 
-  void showRideSheet() async {
+  void showRideSheet() {
     rideSheetHeight = 270;
     searchSheetHeight = 0;
     mapBottomPaddingHeight = rideSheetHeight - 4;
+    setState(() {});
+  }
+
+  void showRequestingSheet() {
+    rideSheetHeight = 0;
+    requestingSheetHeight = 220;
+    mapBottomPaddingHeight = requestingSheetHeight - 4;
     setState(() {});
   }
 
@@ -578,7 +586,7 @@ class _MainPageState extends State<MainPage> {
                             offset: Offset(0, -.7),
                           ),
                           BoxShadow(
-                            color: Colors.grey[50]!,
+                            color: BrandColors.scaffold,
                             offset: const Offset(0, 15),
                           ),
                         ],
@@ -723,7 +731,7 @@ class _MainPageState extends State<MainPage> {
                     child: Container(
                       height: rideSheetHeight,
                       decoration: BoxDecoration(
-                        color: Colors.grey[50]!,
+                        color: BrandColors.scaffold,
                         borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(10),
                           topRight: Radius.circular(10),
@@ -736,7 +744,7 @@ class _MainPageState extends State<MainPage> {
                             offset: Offset(0, -.7),
                           ),
                           BoxShadow(
-                            color: Colors.grey[50]!,
+                            color: BrandColors.scaffold,
                             offset: const Offset(0, 15),
                           ),
                         ],
@@ -837,7 +845,9 @@ class _MainPageState extends State<MainPage> {
                               child: TaxiButton(
                                 title: "REQUEST CAB",
                                 color: BrandColors.accent,
-                                onPressed: () {},
+                                onPressed: () {
+                                  showRequestingSheet();
+                                },
                               ),
                             ),
 
@@ -848,6 +858,107 @@ class _MainPageState extends State<MainPage> {
                     ),
                   ),
                 ),
+
+                // #requestingsheet
+                if (requestingSheetHeight != 0)
+                  AnimatedSize(
+                    duration: kThemeAnimationDuration,
+                    curve: Curves.easeIn,
+                    child: SafeArea(
+                      top: false,
+                      left: false,
+                      right: false,
+                      bottom: requestingSheetHeight == 0 ? false : true,
+                      child: Container(
+                        height: requestingSheetHeight,
+                        decoration: BoxDecoration(
+                          color: BrandColors.scaffold,
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(10),
+                            topRight: Radius.circular(10),
+                          ),
+                          boxShadow: [
+                            const BoxShadow(
+                              color: Colors.black26,
+                              blurRadius: 10,
+                              spreadRadius: .5,
+                              offset: Offset(0, -.7),
+                            ),
+                            BoxShadow(
+                              color: BrandColors.scaffold,
+                              offset: const Offset(0, 15),
+                            ),
+                          ],
+                        ),
+                        child: SafeArea(
+                          top: false,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              const SizedBox(height: 20),
+
+                              // #requesting animation
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 24.0),
+                                child: LinearProgressIndicator(
+                                  color: BrandColors.textSemiLight,
+                                  backgroundColor: BrandColors.scaffold,
+                                ),
+                              ),
+
+                              const SizedBox(height: 10),
+
+                              const Text(
+                                "Requesting a Ride...",
+                                style: TextStyle(
+                                  fontSize: 22.0,
+                                  fontFamily: 'Brand-Bold',
+                                  color: BrandColors.text,
+                                ),
+                              ),
+
+                              const SizedBox(height: 30),
+
+                              // #button cancel
+                              CupertinoButton(
+                                padding: EdgeInsets.zero,
+                                onPressed: () {},
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: 50,
+                                      width: 50,
+                                      decoration: BoxDecoration(
+                                        color: BrandColors.scaffold,
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          width: 1,
+                                          color: BrandColors.lightGrayFair,
+                                        ),
+                                      ),
+                                      child: const Icon(
+                                        Icons.clear_rounded,
+                                        color: BrandColors.text,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 10),
+                                    const Text(
+                                      'Cancel Ride',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: BrandColors.text,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
               ],
             ),
           ),

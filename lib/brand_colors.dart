@@ -22,4 +22,6 @@ class BrandColors {
   static const Color lightGray = Color(0xFFe2e2e2);
   static const Color lightGrayFair = Color(0xFFe1e5e8);
   static const Color dimText = Color(0xFFadadad);
+
+  static Color scaffold = Colors.grey[50]!;
 }
