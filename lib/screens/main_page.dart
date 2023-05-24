@@ -5,10 +5,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:provider/provider.dart';
-import 'package:taxigo/datamodels/address.dart' as address;
-import 'package:taxigo/datamodels/direction_details.dart';
-import 'package:taxigo/datamodels/search_area.dart' as search_area;
+import 'package:taxigo/domain/models/address.dart' as address;
+import 'package:taxigo/domain/models/direction_details.dart';
+import 'package:taxigo/domain/models/search_area.dart' as search_area;
 import 'package:taxigo/dataprovider/app_data.dart';
+import 'package:taxigo/domain/states/profile_state.dart';
 import 'package:taxigo/domains/location_service.dart';
 import 'package:taxigo/screens/search_page.dart';
 import 'package:taxigo/widgets/button_widget.dart';
@@ -46,6 +47,7 @@ class _MainPageState extends State<MainPage> {
   void initState() {
     super.initState();
     _initLocationPermission().ignore();
+    context.read<ProfileState>();
   }
 
   // Functions =================================================================
@@ -87,7 +89,7 @@ class _MainPageState extends State<MainPage> {
     }
 
     if (context.mounted) {
-      Provider.of<AppData>(context, listen: false)
+      Provider.of<AppState>(context, listen: false)
           .updateCurrentLocation(currentLocation);
 
       _moveCameraToCurrentLocation(currentLocation);
@@ -126,7 +128,7 @@ class _MainPageState extends State<MainPage> {
     });
 
     if (newSearchArea != null && context.mounted) {
-      Provider.of<AppData>(context, listen: false)
+      Provider.of<AppState>(context, listen: false)
           .updateSearchArea(newSearchArea);
     }
   }
@@ -178,7 +180,7 @@ class _MainPageState extends State<MainPage> {
       builder: (context) => const ProgressDialog(status: "Please wait..."),
     );
 
-    var appDataProvider = Provider.of<AppData>(context, listen: false);
+    var appDataProvider = Provider.of<AppState>(context, listen: false);
     address.Address? pickup = appDataProvider.currentLocation;
     address.Address? destination = appDataProvider.searchedLocation;
 
@@ -384,10 +386,10 @@ class _MainPageState extends State<MainPage> {
                     height: 100,
                   ),
                   const SizedBox(width: 16),
-                  Column(
+                  const Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
+                    children: [
                       // #username
                       Text(
                         "Khurshid",
@@ -633,8 +635,8 @@ class _MainPageState extends State<MainPage> {
                                     ),
                                   ],
                                 ),
-                                child: Row(
-                                  children: const [
+                                child: const Row(
+                                  children: [
                                     Icon(
                                       CupertinoIcons.search,
                                       color: Colors.blueAccent,
@@ -649,16 +651,16 @@ class _MainPageState extends State<MainPage> {
                             const SizedBox(height: 20),
 
                             // #home
-                            Row(
+                            const Row(
                               children: [
-                                const Icon(
+                                Icon(
                                   Icons.home_outlined,
                                   color: BrandColors.dimText,
                                 ),
-                                const SizedBox(width: 12),
+                                SizedBox(width: 12),
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: const [
+                                  children: [
                                     Text(
                                       "Add Home",
                                       style: TextStyle(
@@ -684,16 +686,16 @@ class _MainPageState extends State<MainPage> {
                             ),
 
                             // #work
-                            Row(
+                            const Row(
                               children: [
-                                const Icon(
+                                Icon(
                                   Icons.work_outline,
                                   color: BrandColors.dimText,
                                 ),
-                                const SizedBox(width: 12),
+                                SizedBox(width: 12),
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: const [
+                                  children: [
                                     Text(
                                       "Add Work",
                                       style: TextStyle(
@@ -812,8 +814,8 @@ class _MainPageState extends State<MainPage> {
                             const SizedBox(height: 20),
 
                             // #cash
-                            Row(
-                              children: const [
+                            const Row(
+                              children: [
                                 SizedBox(width: 20),
                                 Icon(
                                   Icons.money_rounded,

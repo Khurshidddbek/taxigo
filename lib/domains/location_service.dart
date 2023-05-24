@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:taxigo/datamodels/address.dart' as address;
-import 'package:taxigo/datamodels/direction_details.dart';
+import 'package:taxigo/domain/models/address.dart' as address;
+import 'package:taxigo/domain/models/direction_details.dart';
 import 'package:taxigo/domains/app_location.dart';
 import 'package:taxigo/networkservice/api_keys.dart';
 import 'package:taxigo/networkservice/apis.dart';

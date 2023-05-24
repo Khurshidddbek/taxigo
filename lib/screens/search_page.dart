@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:taxigo/brand_colors.dart';
-import 'package:taxigo/datamodels/address.dart';
+import 'package:taxigo/domain/models/address.dart';
 import 'package:taxigo/dataprovider/app_data.dart';
 import 'package:taxigo/networkservice/http_requests.dart';
 import 'package:taxigo/networkservice/parser.dart';
 import 'package:taxigo/networkservice/query_parameters.dart';
 
-import '../datamodels/searched_address.dart';
+import '../domain/models/searched_address.dart';
 import '../networkservice/apis.dart';
 import '../networkservice/debouncer.dart';
 
@@ -41,7 +41,7 @@ class _SearchPageState extends State<SearchPage> {
         Apis.searchPlaceByText,
         QueryParameters.searchPlaceByText(
           text: text,
-          searchArea: Provider.of<AppData>(context, listen: false).searchArea,
+          searchArea: Provider.of<AppState>(context, listen: false).searchArea,
         ),
       );
 
@@ -54,7 +54,7 @@ class _SearchPageState extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
     // #set current location
-    pickupController.text = Provider.of<AppData>(context, listen: true)
+    pickupController.text = Provider.of<AppState>(context, listen: true)
             .currentLocation
             ?.placeName ??
         "";
@@ -191,7 +191,7 @@ class SearchedItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        Provider.of<AppData>(context, listen: false).updateSearchedLocation(
+        Provider.of<AppState>(context, listen: false).updateSearchedLocation(
             Address(
                 latitude: searchedAddress.coordinateLatitude,
                 longitude: searchedAddress.coordinateLongitude));

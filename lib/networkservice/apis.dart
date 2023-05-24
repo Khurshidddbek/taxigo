@@ -1,4 +1,4 @@
-import 'package:taxigo/datamodels/address.dart';
+import 'package:taxigo/domain/models/address.dart';
 
 class Apis {
   static const searchPlaceByText = "https://search-maps.yandex.ru/v1/";

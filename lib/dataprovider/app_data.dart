@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:taxigo/datamodels/address.dart';
-import 'package:taxigo/datamodels/search_area.dart';
+import 'package:taxigo/domain/models/address.dart';
+import 'package:taxigo/domain/models/search_area.dart';
 
-class AppData extends ChangeNotifier {
+class AppState extends ChangeNotifier {
   Address? currentLocation;
   Address? searchedLocation;
   SearchArea? searchArea;

@@ -1,4 +1,4 @@
-import 'package:taxigo/datamodels/search_area.dart';
+import 'package:taxigo/domain/models/search_area.dart';
 import 'package:taxigo/networkservice/api_keys.dart';
 
 class QueryParameters {

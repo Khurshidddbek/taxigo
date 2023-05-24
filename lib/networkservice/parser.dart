@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:taxigo/datamodels/searched_address.dart';
+import 'package:taxigo/domain/models/searched_address.dart';
 
 class Parser {
   static List<SearchedAddress> searchPlaceByText(String responseBody) {
