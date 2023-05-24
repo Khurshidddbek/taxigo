@@ -10,6 +10,7 @@ import 'package:taxigo/domain/models/direction_details.dart';
 import 'package:taxigo/domain/models/search_area.dart' as search_area;
 import 'package:taxigo/dataprovider/app_data.dart';
 import 'package:taxigo/domain/states/profile_state.dart';
+import 'package:taxigo/domain/states/ride_state.dart';
 import 'package:taxigo/domains/location_service.dart';
 import 'package:taxigo/screens/search_page.dart';
 import 'package:taxigo/widgets/button_widget.dart';
@@ -333,6 +334,8 @@ class _MainPageState extends State<MainPage> {
     requestingSheetHeight = 220;
     mapBottomPaddingHeight = requestingSheetHeight - 4;
     setState(() {});
+
+    context.read<RideState>().createRideRequest(context);
   }
 
   void hideRideSheetAndResetMap() {

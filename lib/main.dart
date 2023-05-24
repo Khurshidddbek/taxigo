@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:taxigo/dataprovider/app_data.dart';
 import 'package:taxigo/domain/states/profile_state.dart';
+import 'package:taxigo/domain/states/ride_state.dart';
 import 'package:taxigo/firebase_options.dart';
 import 'package:taxigo/screens/login_page.dart';
 import 'package:taxigo/screens/main_page.dart';
@@ -28,6 +29,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (context) => AppState()),
         ChangeNotifierProvider(create: (context) => ProfileState()),
+        ChangeNotifierProvider(create: (context) => RideState()),
       ],
       child: MaterialApp(
         title: 'TAXIGO',

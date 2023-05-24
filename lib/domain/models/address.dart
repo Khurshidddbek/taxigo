@@ -1,3 +1,5 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+
 class Address {
   double latitude;
   double longitude;
@@ -12,6 +14,16 @@ class Address {
     this.placeId,
     this.placeFormattedName,
   });
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'latitude': latitude,
+      'longitude': longitude,
+      'placeName': placeName,
+      'placeId': placeId,
+      'placeFormattedName': placeFormattedName,
+    };
+  }
 }
 
 class TashkentLocation extends Address {
