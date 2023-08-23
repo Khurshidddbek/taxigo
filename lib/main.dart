@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:taxigo/dataprovider/app_data.dart';
 import 'package:taxigo/domain/states/profile_state.dart';
@@ -11,6 +12,9 @@ import 'package:taxigo/screens/registration_page.dart';
 import 'package:taxigo/screens/search_page.dart';
 
 void main() async {
+  // load API KEYs
+  await dotenv.load(fileName: ".env");
+
   // Firebase init
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(

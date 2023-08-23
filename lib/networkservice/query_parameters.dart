@@ -1,5 +1,5 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:taxigo/domain/models/search_area.dart';
-import 'package:taxigo/networkservice/api_keys.dart';
 
 class QueryParameters {
   static Map<String, dynamic> searchPlaceByText({
@@ -7,7 +7,7 @@ class QueryParameters {
     SearchArea? searchArea,
   }) =>
       {
-        "apikey": ApiKeys.organizationSearchAPIKey,
+        "apikey": dotenv.env['ORG_SEARCH_API_KEY']!,
         "text": text,
         "lang": "en_US",
         if (searchArea != null)
