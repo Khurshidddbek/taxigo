@@ -21,6 +21,12 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file('key.properties')
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
 apply plugin: 'com.android.application'
 // START: FlutterFire Configuration
 apply plugin: 'com.google.gms.google-services'
@@ -46,6 +52,8 @@ android {
     }
 
     defaultConfig {
+        buildConfigField "String", "MAPS_API_KEY", "\"${keystoreProperties['MAPS_API_KEY']}\""
+        
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.gotaxi.taxigo.taxigo"
         // You can update the following values to match your application needs.

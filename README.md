@@ -1,6 +1,17 @@
 # taxigo
 
-A new Flutter project.
+Flutter version to build: Flutter 3.13.0 • channel stable
+
+## Setting up the API Key
+
+To get started, follow these steps to set up your API key:
+
+1. Create a file named `key.properties` in the 'android' file of your project.
+
+2. Open the `key.properties` file and add your Yandex MapKit API key like this:
+
+   ```properties
+   MAPS_API_KEY=your_secret_key
 
 ## Getting Started
 
