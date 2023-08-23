@@ -17,9 +17,9 @@ To get started, follow these steps to set up your API key:
 
 2. Open the `.env` file and add your API keys like this:
 
-```env
-ORG_SEARCH_API_KEY=yandex_javascript_api_and_geocoder_http_api_key
-YANDEX_GEOCODER_API_KEY=yandex_places_http_api_key
+   ```env
+   ORG_SEARCH_API_KEY=yandex_javascript_api_and_geocoder_http_api_key
+   YANDEX_GEOCODER_API_KEY=yandex_places_http_api_key
 
 These keys can be obtained from here: https://developer.tech.yandex.ru/services/
 
